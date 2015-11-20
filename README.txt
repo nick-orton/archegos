@@ -12,3 +12,6 @@ But I want to write it in haskell, so there.
 - menu selection should be white-highlighted
 - box around menu with drop-shadow
 - option 0 is always drop back into terminal
+
+# Bonus Points
+- color schemes in config file
