@@ -1,8 +1,10 @@
 module Main where
 
 import System.Process
+import Data.Char
 import qualified UI.HSCurses.Curses as Curses
 import qualified UI.HSCurses.CursesHelper as CursesH
+
 
 
 selections = [("Drop to term", "foo"),
@@ -14,7 +16,19 @@ addSelectionsToWindow w ctr ((s,_):selections) = do
   let display = (show ctr) ++ ": " ++ s
   Curses.mvWAddStr w (2+ctr) internalMargin display
   addSelectionsToWindow w (ctr+1) selections
-  
+ 
+eventLoop  = do
+  drawWindow
+  k <- Curses.getCh
+  case k of
+    Curses.KeyChar c -> process c
+    _ -> eventLoop
+  where process x = 
+          do if (isDigit x) && length selections > (digitToInt x) 
+               then do let (_,v) = (selections!!(digitToInt x))
+                       p <- createProcess (proc "echo" [v])
+                       return ()
+               else eventLoop
 
 mkWindow = do
   let height = (length selections + 4)
@@ -31,14 +45,13 @@ mkWindow = do
 drawWindow = do
     w <- mkWindow
     Curses.wRefresh w
+    return w
   
 
 main = do
   CursesH.start
   Curses.cursSet Curses.CursorInvisible
-  drawWindow
-  Curses.getCh
-  p <- createProcess (proc "echo" ["foo"])
+  eventLoop
   CursesH.end
   return 0
 
