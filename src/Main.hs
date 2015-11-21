@@ -18,7 +18,7 @@ addSelectionsToWindow w ctr (s:selections) = do
 
 -- TODO make this return window instead of IO window
 mkWindow = do
-  let height = 6
+  let height = (length selections + 4)
       width = 76
       lMargin = 2
       tMargin = 2
