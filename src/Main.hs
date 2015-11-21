@@ -15,14 +15,11 @@ addSelectionsToWindow w ctr (s:selections) = do
   addSelectionsToWindow w (ctr+1) selections
   
 
-
--- TODO make this return window instead of IO window
 mkWindow = do
   let height = (length selections + 4)
       width = 76
       lMargin = 2
       tMargin = 2
-      internalMargin = 3
   w <- Curses.newWin height width lMargin tMargin
   Curses.wBorder w Curses.defaultBorder
   Curses.wAddStr w "Choose WM: "
@@ -37,7 +34,7 @@ drawWindow = do
 
 main = do
   CursesH.start
-  Curses.refresh
+  Curses.cursSet Curses.CursorInvisible
   drawWindow
   Curses.getCh
   p <- createProcess (proc "echo" ["foo"])
