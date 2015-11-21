@@ -4,7 +4,8 @@ import System.Process
 import qualified UI.HSCurses.Curses as Curses
 import qualified UI.HSCurses.CursesHelper as CursesH
 
-drawWindow = do
+-- TODO make this return window instead of IO window
+mkWindow = do
   let height = 6
       width = 76
       lMargin = 2
@@ -15,7 +16,12 @@ drawWindow = do
   Curses.wAddStr w "Choose WM: "
   Curses.mvWAddStr w 2 internalMargin "0: Drop to term"
   Curses.mvWAddStr w 3 internalMargin "1: Xmonad"
-  Curses.wRefresh w
+  return w
+
+
+drawWindow = do
+    w <- mkWindow
+    Curses.wRefresh w
   
 
 main = do
