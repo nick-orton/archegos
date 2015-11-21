@@ -5,13 +5,14 @@ import qualified UI.HSCurses.Curses as Curses
 import qualified UI.HSCurses.CursesHelper as CursesH
 
 
-selections = ["0: Drop to term",
-              "1: Xmonad"]
+selections = [("Drop to term", "foo"),
+              ("Xmonad", "bar")]
 internalMargin = 3
 
 addSelectionsToWindow w ctr [] = return ()
-addSelectionsToWindow w ctr (s:selections) = do
-  Curses.mvWAddStr w (2+ctr) internalMargin s
+addSelectionsToWindow w ctr ((s,_):selections) = do
+  let display = (show ctr) ++ ": " ++ s
+  Curses.mvWAddStr w (2+ctr) internalMargin display
   addSelectionsToWindow w (ctr+1) selections
   
 
