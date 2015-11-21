@@ -4,6 +4,18 @@ import System.Process
 import qualified UI.HSCurses.Curses as Curses
 import qualified UI.HSCurses.CursesHelper as CursesH
 
+
+selections = ["0: Drop to term",
+              "1: Xmonad"]
+internalMargin = 3
+
+addSelectionsToWindow w ctr [] = return ()
+addSelectionsToWindow w ctr (s:selections) = do
+  Curses.mvWAddStr w (2+ctr) internalMargin s
+  addSelectionsToWindow w (ctr+1) selections
+  
+
+
 -- TODO make this return window instead of IO window
 mkWindow = do
   let height = 6
@@ -14,8 +26,7 @@ mkWindow = do
   w <- Curses.newWin height width lMargin tMargin
   Curses.wBorder w Curses.defaultBorder
   Curses.wAddStr w "Choose WM: "
-  Curses.mvWAddStr w 2 internalMargin "0: Drop to term"
-  Curses.mvWAddStr w 3 internalMargin "1: Xmonad"
+  addSelectionsToWindow w 0 selections
   return w
 
 
