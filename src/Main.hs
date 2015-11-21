@@ -1,5 +1,8 @@
 module Main where
 
-main = putStrLn "deez nutz"
+import System.Process
 
+main = do
+  p <- createProcess (proc "echo" ["foo"])
+  return 0
 
