@@ -1,60 +1,66 @@
 module Main where
 
-import System.Process
-import Control.Exception
-import Data.Char
+import System.Process (createProcess, proc)
+import Control.Exception (finally)
+import Data.Char (digitToInt, isDigit)
 import qualified UI.HSCurses.Curses as Curses
 import qualified UI.HSCurses.CursesHelper as CursesH
 
 
-
+-- Selections are a collection of tuples.  The first member of the tuple is the
+-- string to display in the menue.  The second member is the target to execute.
 selections = [("Drop to term", "foo"),
               ("Xmonad", "bar")]
-internalMargin = 3
 
-addSelectionsToWindow w ctr [] = return ()
-addSelectionsToWindow w ctr ((s,_):selections) = do
+-- Styling constants for the menu
+padding = 3
+topPadding = 2
+menuWidth = 76
+margin = 2
+
+-- This writes the display strings from the selections list into the menu
+addSelectionsToMenu menu ctr [] = return ()
+addSelectionsToMenu menu ctr ((s,_):selections) = do
   let display = (show ctr) ++ ": " ++ s
-  Curses.mvWAddStr w (2+ctr) internalMargin display
-  addSelectionsToWindow w (ctr+1) selections
+  Curses.mvWAddStr menu (topPadding+ctr) padding display
+  addSelectionsToMenu menu (ctr+1) selections
  
+-- Draw the menu acording to the size of the selections list and the constants
+-- listed above.
+drawMenu = do
+  let height = (length selections + 4)
+  menu <- Curses.newWin height menuWidth margin margin
+  Curses.wBorder menu Curses.defaultBorder
+  Curses.wAddStr menu "Choose WM: "
+  addSelectionsToMenu menu 0 selections
+  Curses.wRefresh menu
+  return menu
+
+-- The main event loop.  This draws the menu and then waits for a keypress.
+-- If the key pressed is a value for one of the selections, it echos out the
+-- target for the selection
 eventLoop  = do
-  drawWindow
+  drawMenu
   k <- Curses.getCh
   case k of
     Curses.KeyChar c -> process c
     _ -> eventLoop
-  where process x = 
-          do if (isDigit x) && length selections > (digitToInt x) 
-               then do let (_,v) = (selections!!(digitToInt x))
-                       p <- createProcess (proc "echo" [v])
-                       return ()
-               else eventLoop
-
-mkWindow = do
-  let height = (length selections + 4)
-      width = 76
-      lMargin = 2
-      tMargin = 2
-  w <- Curses.newWin height width lMargin tMargin
-  Curses.wBorder w Curses.defaultBorder
-  Curses.wAddStr w "Choose WM: "
-  addSelectionsToWindow w 0 selections
-  return w
+  where process c = do 
+          if (isDigit c) && length selections > (digitToInt c) 
+          then do let (_,target) = (selections!!(digitToInt c))
+                  p <- createProcess (proc "echo" [target])
+                  return ()
+          else eventLoop
 
 
-drawWindow = do
-    w <- mkWindow
-    Curses.wRefresh w
-    return w
- 
+-- Initialize the curses, set the cursor invisible and start the event loop.
 runCurses = do
   CursesH.start
   Curses.cursSet Curses.CursorInvisible
   eventLoop
 
 
+-- Runs the curses and always safely shuts down
 main = do
   runCurses `finally` CursesH.end
-  return 0
 
