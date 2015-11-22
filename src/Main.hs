@@ -1,6 +1,7 @@
 module Main where
 
 import System.Process
+import Control.Exception
 import Data.Char
 import qualified UI.HSCurses.Curses as Curses
 import qualified UI.HSCurses.CursesHelper as CursesH
@@ -46,12 +47,14 @@ drawWindow = do
     w <- mkWindow
     Curses.wRefresh w
     return w
-  
-
-main = do
+ 
+runCurses = do
   CursesH.start
   Curses.cursSet Curses.CursorInvisible
   eventLoop
-  CursesH.end
+
+
+main = do
+  runCurses `finally` CursesH.end
   return 0
 
