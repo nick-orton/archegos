@@ -3,14 +3,15 @@ module Main where
 import System.Process (createProcess, proc)
 import Control.Exception (finally)
 import Data.Char (digitToInt, isDigit)
+import qualified ConfigReader as CR
 import qualified UI.HSCurses.Curses as Curses
 import qualified UI.HSCurses.CursesHelper as CursesH
 
 
 -- Selections are a collection of tuples.  The first member of the tuple is the
 -- string to display in the menue.  The second member is the target to execute.
-selections = [("Drop to term", "foo"),
-              ("Xmonad", "bar")]
+-- selections = [("Drop to term", "foo"),
+--               ("Xmonad", "bar")]
 
 -- Styling constants for the menu
 padding = 3
@@ -27,7 +28,7 @@ addSelectionsToMenu menu ctr ((s,_):selections) = do
  
 -- Draw the menu acording to the size of the selections list and the constants
 -- listed above.
-drawMenu = do
+drawMenu selections = do
   let height = (length selections + 4)
   menu <- Curses.newWin height menuWidth margin margin
   Curses.wBorder menu Curses.defaultBorder
@@ -39,25 +40,28 @@ drawMenu = do
 -- The main event loop.  This draws the menu and then waits for a keypress.
 -- If the key pressed is a value for one of the selections, it echos out the
 -- target for the selection
-eventLoop  = do
-  drawMenu
+eventLoop selections = do
+  drawMenu selections
   k <- Curses.getCh
   case k of
     Curses.KeyChar c -> process c
-    _ -> eventLoop
+    _ -> eventLoop selections
   where process c = do 
           if (isDigit c) && length selections > (digitToInt c) 
           then do let (_,target) = (selections!!(digitToInt c))
                   p <- createProcess (proc "echo" [target])
                   return ()
-          else eventLoop
+          else eventLoop selections
+
+
 
 
 -- Initialize the curses, set the cursor invisible and start the event loop.
 runCurses = do
   CursesH.start
   Curses.cursSet Curses.CursorInvisible
-  eventLoop
+  selections <- CR.readSelections
+  eventLoop selections
 
 
 -- Runs the curses and always safely shuts down

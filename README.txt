@@ -29,3 +29,4 @@ The config file has the format of:
 
 #TODOS
 use $XDG_CONFIG_HOME if present
+write YAML parser to split tuples
