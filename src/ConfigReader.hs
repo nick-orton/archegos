@@ -7,12 +7,6 @@ import Control.Applicative
 import Data.List.Split
 import qualified Data.ByteString.Char8 as BS
 
-tuplefy :: [a] -> (a,a)
-tuplefy [x,y] = (x,y)
-
-splitToTuple :: String-> (String, String)
-splitToTuple s = tuplefy (splitOn "," s)
-
 data ArcConfig = ArcConfig {title :: String,
                             selections :: [String]} deriving (Show)
 
@@ -31,9 +25,9 @@ readArcConfig = do
   let Just config = Data.Yaml.decode byteString
   return config
  
-
-readSelections :: IO [(String,String)]
-readSelections = do
-  sels <- fmap selections readArcConfig
-  let splitSelections = map splitToTuple sels
-  return splitSelections
+readSelections :: ArcConfig -> [(String,String)]
+readSelections arcConfig = 
+   map (\s -> tuplefy (splitOn "," s)) raw
+   where 
+     raw = selections arcConfig
+     tuplefy [x,y] = (x,y)

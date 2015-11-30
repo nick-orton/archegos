@@ -28,11 +28,11 @@ addSelectionsToMenu menu ctr ((s,_):selections) = do
  
 -- Draw the menu acording to the size of the selections list and the constants
 -- listed above.
-drawMenu selections = do
+drawMenu selections title = do
   let height = length selections + 4
   menu <- Curses.newWin height menuWidth margin margin
   Curses.wBorder menu Curses.defaultBorder
-  Curses.wAddStr menu "Choose WM: "
+  Curses.wAddStr menu title
   addSelectionsToMenu menu 0 selections
   Curses.wRefresh menu
   return menu
@@ -40,18 +40,20 @@ drawMenu selections = do
 -- The main event loop.  This draws the menu and then waits for a keypress.
 -- If the key pressed is a value for one of the selections, it echos out the
 -- target for the selection
-eventLoop selections = do
-  drawMenu selections
+eventLoop arcConfig = do
+  drawMenu selections $ CR.title arcConfig
   k <- Curses.getCh
   case k of
     Curses.KeyChar c -> process c
-    _ -> eventLoop selections
-  where process c = 
+    _ -> eventLoop arcConfig
+  where 
+    selections = CR.readSelections arcConfig
+    process c = 
           if isDigit c && length selections > digitToInt c 
           then do let (_,target) = selections !! digitToInt c
                   p <- createProcess (proc "echo" [target])
                   return ()
-          else eventLoop selections
+          else eventLoop arcConfig
 
 
 
@@ -60,8 +62,8 @@ eventLoop selections = do
 runCurses = do
   CursesH.start
   Curses.cursSet Curses.CursorInvisible
-  selections <- CR.readSelections
-  eventLoop selections
+  arcConfig <- CR.readArcConfig
+  eventLoop arcConfig
 
 
 -- Runs the curses and always safely shuts down

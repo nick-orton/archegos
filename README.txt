@@ -15,18 +15,15 @@ The config file has the format of:
 
 # PLANS
 
-- config file written in yml sitting in .xconfig/hdm
-- config file has links to welcome message and key-value pairs of display-name,
-  .xinit files
 - ncurses based front end that allows user to choose one of the display-names,
   and launches startx with the init file
-- menu selection should be white-highlighted
-- box around menu with drop-shadow
 - option 0 is always drop back into terminal
 
 # Bonus Points
 - color schemes in config file
 
 #TODOS
+Always add a Term option to the selections
+Choose the program to use to startx
 use $XDG_CONFIG_HOME if present
 write YAML parser to split tuples
