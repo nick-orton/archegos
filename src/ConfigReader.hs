@@ -23,16 +23,16 @@ instance FromJSON ArcConfig where
     -- A non-Object value is of the wrong type, so fail.
     parseJSON _ = error "Can't parse MyUser from YAML/JSON"
 
+readArcConfig :: IO ArcConfig
 readArcConfig = do
-  homeDir <- (getEnv "HOME") 
-  let configFileLocation =  homeDir ++ "/.config/archegos/archegos.conf"
-  ymlData <- BS.readFile configFileLocation
-  let Just config = Data.Yaml.decode ymlData :: Maybe ArcConfig
+  let homeDir = getEnv "HOME" 
+      configFileLocation = (++) <$> homeDir <*> pure "/.config/archegos/archegos.conf" :: IO String
+  ymlData <- configFileLocation >>= BS.readFile
+  let Just config = Data.Yaml.decode ymlData
   return config
  
 
 readSelections = do
-  config <- readArcConfig
-  let sels = selections config
-      splitSelections = map splitToTuple sels
+  sels <- fmap selections readArcConfig
+  let splitSelections = map splitToTuple sels
   return splitSelections
