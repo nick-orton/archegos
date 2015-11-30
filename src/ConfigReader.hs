@@ -27,11 +27,12 @@ readArcConfig :: IO ArcConfig
 readArcConfig = do
   let homeDir = getEnv "HOME" 
       configFileLocation = (++) <$> homeDir <*> pure "/.config/archegos/archegos.conf" :: IO String
-  ymlData <- configFileLocation >>= BS.readFile
-  let Just config = Data.Yaml.decode ymlData
+  byteString <- configFileLocation >>= BS.readFile
+  let Just config = Data.Yaml.decode byteString
   return config
  
 
+readSelections :: IO [(String,String)]
 readSelections = do
   sels <- fmap selections readArcConfig
   let splitSelections = map splitToTuple sels

@@ -22,14 +22,14 @@ margin = 2
 -- This writes the display strings from the selections list into the menu
 addSelectionsToMenu menu ctr [] = return ()
 addSelectionsToMenu menu ctr ((s,_):selections) = do
-  let display = (show ctr) ++ ": " ++ s
+  let display = show ctr ++ ": " ++ s
   Curses.mvWAddStr menu (topPadding+ctr) padding display
   addSelectionsToMenu menu (ctr+1) selections
  
 -- Draw the menu acording to the size of the selections list and the constants
 -- listed above.
 drawMenu selections = do
-  let height = (length selections + 4)
+  let height = length selections + 4
   menu <- Curses.newWin height menuWidth margin margin
   Curses.wBorder menu Curses.defaultBorder
   Curses.wAddStr menu "Choose WM: "
@@ -46,9 +46,9 @@ eventLoop selections = do
   case k of
     Curses.KeyChar c -> process c
     _ -> eventLoop selections
-  where process c = do 
-          if (isDigit c) && length selections > (digitToInt c) 
-          then do let (_,target) = (selections!!(digitToInt c))
+  where process c = 
+          if isDigit c && length selections > digitToInt c 
+          then do let (_,target) = selections !! digitToInt c
                   p <- createProcess (proc "echo" [target])
                   return ()
           else eventLoop selections
@@ -65,6 +65,5 @@ runCurses = do
 
 
 -- Runs the curses and always safely shuts down
-main = do
-  runCurses `finally` CursesH.end
+main = runCurses `finally` CursesH.end
 
