@@ -23,7 +23,6 @@ The config file has the format of:
 - color schemes in config file
 
 #TODOS
-Always add a Term option to the selections
 Choose the program to use to startx
 use $XDG_CONFIG_HOME if present
 write YAML parser to split tuples

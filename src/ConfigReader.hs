@@ -27,7 +27,7 @@ readArcConfig = do
  
 readSelections :: ArcConfig -> [(String,String)]
 readSelections arcConfig = 
-   map (\s -> tuplefy (splitOn "," s)) raw
+   ("Terminal", "term") : map (\s -> tuplefy (splitOn " " s)) raw
    where 
      raw = selections arcConfig
      tuplefy [x,y] = (x,y)
