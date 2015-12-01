@@ -10,6 +10,7 @@ config/archegos.example.config
 The config file has the format of:
 
     title:     "My Menu Title"
+    executable: echo
     selections:
      - "SelectionDisplay1, Target1"
      - "SelectionDisplay2, Target2"

@@ -8,11 +8,13 @@ import Data.List.Split
 import qualified Data.ByteString.Char8 as BS
 
 data ArcConfig = ArcConfig {title :: String,
+                            executable :: String,
                             selections :: [String]} deriving (Show)
 
 instance FromJSON ArcConfig where
     parseJSON (Object v) = ArcConfig <$>
                            v .: "title" <*>
+                           v .: "executable" <*>
                            v .: "selections"
     -- A non-Object value is of the wrong type, so fail.
     parseJSON _ = error "Can't parse MyUser from YAML/JSON"

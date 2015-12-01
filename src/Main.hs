@@ -52,7 +52,7 @@ eventLoop arcConfig = do
     process c = 
           if isDigit c && length selections > digitToInt c 
           then do let (_,target) = selections !! digitToInt c
-                  p <- createProcess (proc "echo" [target])
+                  p <- createProcess (proc (CR.executable arcConfig) [target])
                   return ()
           else eventLoop arcConfig
 
