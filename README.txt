@@ -4,7 +4,8 @@ But I want to write it in haskell, so there.
 
 ## Config
 By default, archegos looks in $HOME/.config/archegos/archegos.conf for it's 
-configuration file.
+configuration file.  You can find an example config file in 
+config/archegos.example.config
 
 The config file has the format of:
 
