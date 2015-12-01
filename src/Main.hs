@@ -44,6 +44,7 @@ eventLoop arcConfig = do
   drawMenu selections $ CR.title arcConfig
   k <- Curses.getCh
   case k of
+    Curses.KeyChar '0' -> return ()
     Curses.KeyChar c -> process c
     _ -> eventLoop arcConfig
   where 
